@@ -1,11 +1,10 @@
 <template>
   <a-layout class="layout">
-    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', color: 'white', fontSize: '16px' }">
-      <div class="logo" />
-      经典猫狗识别
+    <a-layout-header class="header" :style="{ position: 'fixed', zIndex: 1, width: '100%', color: 'white', fontSize: '16px' }">
+      <img src="./assets/logo.png" style="height: 85%; float: left" alt="" @click="$router.push('/')">
     </a-layout-header>
-    <a-layout-content :style="{ padding: '0 400px', marginTop: '80px' }">
-      <a-card>
+    <a-layout-content :style="{ padding: '0 300px', marginTop: '80px' }">
+      <a-card style="minWidth: 800px">
         <a-upload-dragger
           ref="up"
           name="file"
@@ -24,10 +23,10 @@
             </div>
             <div v-else>
               <p class="ant-upload-drag-icon">
-                <inbox-outlined />
+                <cloud-upload-outlined />
               </p>
               <p class="ant-upload-text">
-                点击或拖动图片到这个区域
+                点击上传猫或狗的图片
               </p>
             </div>
         </a-upload-dragger>
@@ -51,20 +50,20 @@
       </a-card>
     </a-layout-content>
     <a-layout-footer :style="{ textAlign: 'center' }">
-      xinwuyun ©2022 Powerd by serverless and animeGAN2 
+      xinwuyun ©2022 Powerd by Aliyun serverless
     </a-layout-footer>
   </a-layout>
 </template>
 
 <script>
-import { InboxOutlined,LoadingOutlined } from "@ant-design/icons-vue";
+import { CloudUploadOutlined,LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { defineComponent, ref } from "vue";
 
 
 export default defineComponent({
   components: {
-    InboxOutlined, LoadingOutlined
+    CloudUploadOutlined, LoadingOutlined
   },
   setup() {
     const up = ref(null);
@@ -198,12 +197,9 @@ export default defineComponent({
 .layout {
   height: 100vh;
 }
-.layout .logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 24px 16px 0;
-  float: left;
+.layout .title {
+  line-height: 100%;
+  font-size: 20px;
 }
 .site-layout .site-layout-background {
   background: #fff;
@@ -215,6 +211,12 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.header {
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
 }
 
 [data-theme="dark"] .site-layout .site-layout-background {
