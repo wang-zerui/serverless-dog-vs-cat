@@ -2,7 +2,7 @@
   <a-layout class="layout">
     <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', color: 'white', fontSize: '16px' }">
       <div class="logo" />
-      漫画风图片生成
+      经典猫狗识别
     </a-layout-header>
     <a-layout-content :style="{ padding: '0 400px', marginTop: '80px' }">
       <a-card>
@@ -10,7 +10,6 @@
           ref="up"
           name="file"
           :customRequest="upload"
-          :beforeUpload="beforeUpload"
           @drop="handleDrop"
           :disabled="loading"
         >
@@ -18,8 +17,9 @@
               <p class="ant-upload-drag-icon">
                 <loading-outlined />
               </p>
+              <a-progress :percent="defaultPercent" />
               <p class="ant-upload-text">
-                Transforming...
+                Serverless实例正在识别，TensorFlow加载时间会比较长，但是不会超过两分钟...
               </p>
             </div>
             <div v-else>
@@ -31,23 +31,21 @@
               </p>
             </div>
         </a-upload-dragger>
-        <a-space v-if="imageUrl" class="result">
-          <a-card title="原图" style="width: 100%">
+        <a-space v-if="imageUrl" class="result" direction="vertical">
+          <a-card title="原图" >
             <template #extra>
               <a-button>
                 保存
               </a-button>
             </template>
-            <img :src="imageUrl" alt="">
+            <img :src="imageUrl" alt="" style="max-height: 200px">
           </a-card>
-
-          <a-card title="转换结果" style="width: 100%" v-if="animeUrl">
-            <template #extra>
-              <a-button>
-                保存
-              </a-button>
-            </template>
-            <img :src="animeUrl" alt="">
+          <a-card :title="`它是${result}，这个结果正确吗?`" style="width: 100%" v-if="result!=''">
+            <a-space>
+              <a-button :loading="loading2" :disabled="disabled" @click="label(true)" type="primary" >正确</a-button>
+              <a-button :loading="loading2" :disabled="disabled" @click="label(false)" type="error">错误</a-button>
+            </a-space>
+            <a-button></a-button>
           </a-card>
         </a-space>
       </a-card>
@@ -62,7 +60,6 @@
 import { InboxOutlined,LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { defineComponent, ref } from "vue";
-import Compressor from 'compressorjs';
 
 
 export default defineComponent({
@@ -72,51 +69,31 @@ export default defineComponent({
   setup() {
     const up = ref(null);
     const imageUrl = ref('');
-    const animeUrl = ref('');
+    const defaultPercent = ref(0);
+    const result = ref('');    
     const loading = ref(false)
+    const loading2 = ref(false)
+    const disabled = ref(false)
     // function getBase64(img, callback) {
     //   const reader = new FileReader();
     //   reader.addEventListener('load', () => callback(reader.result));
     //   reader.readAsDataURL(img);
     // }
-    const compressor = (file) =>  {
-      return new Promise(resolve => {
-        new Compressor(file, {
-          quality: 0.5,
-          success: resolve,
-          error(err) {
-            console.log(err.message)
-          },
-        })
-      })
-    };
 
-    const beforeUpload = (file) => {
-      loading.value = true;
-      if(file.size > 100 * 1024){
-        message.error("图片过大，请上传小于100k的图片")
-        loading.value = false;
-        return false;
-      }else{
-        return true;
-      }
+    const clear = () => {
+      up.value = null;
+      imageUrl.value = '';
+      result.value = '';
+      loading.value = false;
+      disabled.value = false;
     }
     const upload = async (option) => {
+      clear();
       loading.value = true;
-      animeUrl.value = "";
       imageUrl.value = ""
       const reader = new FileReader();
       let file = option.file;
-      if(option.file.size > 100 * 1024){
-        message.error("图片过大，请上传小于100k的图片")
-        loading.value = false;
-        up.value.abort();
-        option.onError();
-        return;
-      }else if(option.file.size > 50 * 1024){
-        file = await compressor(file);
-        console.log(file);
-      }
+      
       reader.readAsDataURL(file);
       reader.onloadend = function(e) {
         const base64 = e.target.result.toString().split(',')[1];
@@ -130,18 +107,30 @@ export default defineComponent({
             method: 'POST',
             body: raw,
           };
-
-          fetch("https://image-server-cloud-homework-bmntzdwfom.cn-hangzhou.fcapp.run/images/comic_style", requestOptions)
+          fetch("https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/cloud-homework/dog-vs-cat-predict/dog-vs-cat", requestOptions)
             .then(response => response.json())
-            .then(result => {
-              const animeBase64 = result.photo;
-              animeUrl.value = animeBase64;
+            .then(res => {
+              let {dog, cat, code} = res;
+              dog = parseFloat(dog)
+              cat = parseFloat(cat)
+              console.log(dog)
+              console.log(cat)
+              if(code != "0"){
+                message.error(`Failed to identify.`);
+                up.value.abort();
+                option.onError();
+                return;
+              }
+              if(dog > cat){result.value = "狗" }
+              else{
+                result.value = "猫";
+              }
               loading.value = false;
-              message.success("转换成功");
+              message.success("识别成功");
               option.onSuccess();
             })
             .catch((error) => {
-              message.error(`转换失败${error}`);
+              message.error(`API error ${error}`);
               up.value.abort();
               option.onError();
             });
@@ -149,14 +138,53 @@ export default defineComponent({
       }
       return true;
     }
+    const label = (isCorrect) => {
+      loading2.value = true;
+      let l ;
+      if( result.value == "狗"){
+        l = isCorrect?"dog":"cat";
+      }else{
+        l = isCorrect?"cat":"dog";
+      }
+      const base64 = (imageUrl.value.split(", "))[1];
+      var raw = JSON.stringify({
+        "image": base64,
+        "label": l
+      });
+
+      var requestOptions = {
+        method: 'POST',
+        body: raw,
+      };
+      
+      fetch("https://dog-vs-t-upload-cloud-homework-azkjfipaes.cn-hangzhou.fcapp.run/upload", requestOptions)
+        .then(response => response.json())
+        .then(res => {
+          let {code} = res;
+          if(code != 0){
+            message.error("Failed to label this image.");
+            return;
+          }
+          loading2.value = false;
+          message.success("提交成功");
+          disabled.value = true;
+        })
+        .catch((error) => {
+          loading2.value = false;
+          message.error(`API error ${error}`);
+        });
+    }
     return {
-      title: "漫画风图片生成",
+      title: "猫狗识别工具",
       up,
       imageUrl,
-      animeUrl,
+      defaultPercent,
+      result,
       loading,
+      loading2,
       upload,
-      beforeUpload,
+      label,
+      disabled,
       fileList: ref([]),
       handleDrop: (e) => {
         console.log(e);
@@ -183,6 +211,10 @@ export default defineComponent({
 
 .result {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 [data-theme="dark"] .site-layout .site-layout-background {
