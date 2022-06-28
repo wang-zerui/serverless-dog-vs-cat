@@ -1,0 +1,24 @@
+{
+  "statefulConfig": {
+    "triggerName": "httpTrigger",
+    "description": "",
+    "triggerId": "670a43c7-be5a-4b82-b0b9-f33b6423073d",
+    "sourceArn": null,
+    "triggerType": "http",
+    "invocationRole": null,
+    "qualifier": null,
+    "urlInternet": "https://dog-vs-predict-cloud-homework-bnptzdrrws.cn-hangzhou.fcapp.run",
+    "urlIntranet": "https://dog-vs-predict-cloud-homework-bnptzdrrws.cn-hangzhou-vpc.fcapp.run",
+    "triggerConfig": {
+      "methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "authType": "anonymous"
+    },
+    "createdTime": "2022-05-27T08:30:57Z",
+    "lastModifiedTime": "2022-05-27T11:54:42Z",
+    "name": "httpTrigger"
+  }
+}

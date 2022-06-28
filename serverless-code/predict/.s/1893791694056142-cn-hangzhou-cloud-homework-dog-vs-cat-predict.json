@@ -1,0 +1,38 @@
+{
+  "statefulConfig": {
+    "functionId": "28b2c048-86ac-4df5-98c1-202c6520b291",
+    "functionName": "dog-vs-cat-predict",
+    "description": "图片处理服务",
+    "runtime": "python3",
+    "handler": "index.app",
+    "timeout": 300,
+    "initializer": "",
+    "initializationTimeout": 3,
+    "codeSize": 217376,
+    "codeChecksum": "9338682288855229043",
+    "memorySize": 3072,
+    "gpuMemorySize": null,
+    "environmentVariables": {},
+    "createdTime": "2022-05-27T08:30:57Z",
+    "lastModifiedTime": "2022-05-27T11:54:41Z",
+    "instanceConcurrency": 1,
+    "instanceSoftConcurrency": null,
+    "customContainerConfig": null,
+    "caPort": null,
+    "instanceType": "e1",
+    "layers": null,
+    "instanceLifecycleConfig": {
+      "preFreeze": {
+        "handler": "",
+        "timeout": 3
+      },
+      "preStop": {
+        "handler": "",
+        "timeout": 3
+      }
+    },
+    "customDNS": null,
+    "customRuntimeConfig": null,
+    "name": "dog-vs-cat-predict"
+  }
+}

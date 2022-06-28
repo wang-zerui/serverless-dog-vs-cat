@@ -1,0 +1,24 @@
+{
+  "statefulConfig": {
+    "triggerName": "httpTrigger",
+    "description": "",
+    "triggerId": "cbf5ced1-b9eb-43ca-9ed1-c3ad1b35f5b9",
+    "sourceArn": null,
+    "triggerType": "http",
+    "invocationRole": null,
+    "qualifier": null,
+    "urlInternet": "https://dog-vs-t-upload-cloud-homework-azkjfipaes.cn-hangzhou.fcapp.run",
+    "urlIntranet": "https://dog-vs-t-upload-cloud-homework-azkjfipaes.cn-hangzhou-vpc.fcapp.run",
+    "triggerConfig": {
+      "methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "authType": "anonymous"
+    },
+    "createdTime": "2022-05-27T11:49:19Z",
+    "lastModifiedTime": "2022-05-27T11:49:19Z",
+    "name": "httpTrigger"
+  }
+}
